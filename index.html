@@ -3,860 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Vision Ug - Download Movies, Audio MP3s, and Reading Notes</title>
+    <title>Pro Vision Ug - Movies, MP3s, and Notes</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
             color: #333;
-            padding-bottom: 60px; /* Prevent footer overlap */
+            padding-bottom: 80px;
         }
         header {
-            background-color: #333;
-            color: white;
-            padding: 20px;
+            background-color: #1a1a1a;
+            color: #ffcc00;
+            padding: 30px;
             text-align: center;
+            border-bottom: 4px solid #ffcc00;
         }
-        header h1 {
-            margin: 0;
-        }
+        header h1 { margin: 0; font-size: 2.5rem; }
         nav {
-            background-color: #444;
-            padding: 10px;
+            background-color: #333;
+            padding: 15px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         nav a {
             color: white;
             margin: 0 15px;
             text-decoration: none;
             font-weight: bold;
+            transition: 0.3s;
         }
-        nav a:hover {
-            color: #ffcc00;
-        }
+        nav a:hover { color: #ffcc00; }
         section {
-            padding: 20px;
-            margin: 20px;
+            padding: 25px;
+            margin: 20px auto;
+            max-width: 900px;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        h2 {
-            color: #333;
-            border-bottom: 2px solid #ffcc00;
-            padding-bottom: 10px;
-        }
-        .download-list {
-            list-style: none;
-            padding: 0;
-        }
+        h2 { border-bottom: 2px solid #ffcc00; padding-bottom: 10px; }
+        .download-list { list-style: none; padding: 0; }
         .download-list li {
             margin: 10px 0;
-            padding: 10px;
+            padding: 15px;
             background-color: #f9f9f9;
-            border-radius: 5px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+            border: 1px solid #eee;
         }
-        .download-list li .item-info {
-            flex-grow: 1;
-            margin-right: 10px;
-        }
-        .download-btn, .edit-btn, .comment-btn {
-            background-color: #ffcc00;
-            color: #333;
-            padding: 8px 15px;
+        .btn {
+            padding: 10px 18px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
-            transition: background-color 0.3s;
-            margin-left: 5px;
-            display: inline-block;
-        }
-        .download-btn:hover, .edit-btn:hover, .comment-btn:hover {
-            background-color: #e6b800;
-        }
-        .comment-btn {
-            background-color: #007bff;
-            color: white;
-            font-size: 14px;
-            padding: 8px 10px;
-        }
-        .comment-btn::after {
-            content: ' 💬'; /* Simple comment icon emoji */
-        }
-        .upload-form {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-        }
-        .upload-form input[type="file"], .upload-form input[type="text"] {
-            margin-right: 10px;
-            padding: 5px;
-        }
-        .upload-form button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
             cursor: pointer;
-        }
-        .upload-form button:hover {
-            background-color: #218838;
-        }
-        .edit-form {
-            display: none;
-            margin-top: 10px;
-        }
-        .edit-form input {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 5px;
-        }
-        .youtube-section {
-            margin-top: 20px;
-        }
-        .youtube-embed {
-            width: 100%;
-            height: 315px;
             border: none;
-            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 14px;
         }
+        .download-btn { background-color: #ffcc00; color: #111; }
+        .comment-btn { background-color: #007bff; color: white; margin-left: 8px; }
+        .download-btn:hover { background-color: #e6b800; }
+        .comment-btn:hover { background-color: #0056b3; }
+        
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
         }
         .modal-content {
             background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
             max-width: 500px;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: black;
-        }
-        .comments-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-        .comment-item {
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
-        }
         footer {
-            background-color: #333;
-            color: white;
+            background-color: #1a1a1a;
+            color: #ccc;
             text-align: center;
-            padding: 10px;
+            padding: 20px;
             position: fixed;
-            width: 100%;
             bottom: 0;
-        }
-        @media (max-width: 600px) {
-            .download-list li {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .download-list li .item-info {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
+            width: 100%;
         }
     </style>
 </head>
 <body>
+
     <header>
         <h1>Pro Vision Ug</h1>
         <p>Your ultimate destination for movies, music, and educational notes!</p>
     </header>
-    
+
     <nav>
         <a href="#movies">Movies</a>
         <a href="#audio">Audio MP3</a>
         <a href="#notes">Reading Notes</a>
-        <a href="#youtube">YouTube Links</a>
+        <a href="#youtube">YouTube</a>
     </nav>
-    
+
     <section id="movies">
-        <h2>Movies Download</h2>
-        <ul class="download-list" id="movies-list">
+        <h2>Latest Movies</h2>
+        <ul class="download-list">
             <li>
-                <span class="item-info">Movie 1: Action Thriller (MP4)</span>
-                <a href="movies/movie1.mp4" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('movie1')">Comments</button>
+                <span>Action Movie Title (MP4)</span>
+                <div>
+                    <a href="movies/sample.mp4" download class="btn download-btn">Download</a>
+                    <button class="btn comment-btn" onclick="openComments('movie1')">💬</button>
+                </div>
             </li>
-            <li>
-                <span class="item-info">Movie 2: Sci-Fi Adventure (MP4)</span>
-                <a href="movies/movie2.mp4" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('movie2')">Comments</button>
-            </li>
-            <!-- Add more movie links as needed -->
         </ul>
     </section>
-    
+
     <section id="audio">
-        <h2>Audio MP3 Downloads</h2>
-        <ul class="download-list" id="audio-list">
+        <h2>Music Downloads</h2>
+        <ul class="download-list">
             <li>
-                <span class="item-info">Song 1: Pop Hit (MP3)</span>
-                <a href="audio/song1.mp3" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('song1')">Comments</button>
+                <span>Artist - Song Title (MP3)</span>
+                <div>
+                    <a href="audio/sample.mp3" download class="btn download-btn">Download</a>
+                    <button class="btn comment-btn" onclick="openComments('song1')">💬</button>
+                </div>
             </li>
-            <li>
-                <span class="item-info">Song 2: Rock Anthem (MP3)</span>
-                <a href="audio/song2.mp3" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('song2')">Comments</button>
-            </li>
-            <!-- Add more audio links as needed -->
         </ul>
     </section>
-    
+
     <section id="notes">
-        <h2>Reading Notes Download</h2>
-        <!-- Owner Upload Form (Simulated - in production, use backend like PHP/Node for real uploads) -->
-        <div class="upload-form">
-            <h3>Owner Upload PDF</h3>
-            <input type="text" id="pdf-title" placeholder="Enter PDF Title (e.g., Notes 3: Advanced JS)">
-            <input type="file" id="pdf-file" accept=".pdf">
-            <button onclick="uploadPDF()">Upload PDF</button>
-            <p id="upload-status"></p>
-        </div>
-        <ul class="download-list" id="notes-list">
+        <h2>Educational Notes</h2>
+        <ul class="download-list">
             <li>
-                <span class="item-info" contenteditable="true" onblur="saveEdit(this, 'python_notes')">Notes 1: Python Programming (PDF)</span>
-                <div class="edit-form">
-                    <input type="text" id="edit-python" value="Notes 1: Python Programming (PDF)">
-                    <button onclick="saveEditForm('python_notes', this.previousElementSibling)">Save</button>
+                <span>S4 Physics - Light (PDF)</span>
+                <div>
+                    <a href="notes/physics.pdf" download class="btn download-btn">Download</a>
+                    <button class="btn comment-btn" onclick="openComments('note1')">💬</button>
                 </div>
-                <a href="notes/python_notes.pdf" download class="download-btn">Download</a>
-                <button class="edit-btn" onclick="toggleEdit('python_notes')">Edit</button>
-                <button class="comment-btn" onclick="openComments('python_notes')">Comments</button>
             </li>
-            <li>
-                <span class="item-info" contenteditable="true" onblur="saveEdit(this, 'web_notes')">Notes 2: Web Development Basics (PDF)</span>
-                <div class="edit-form">
-                    <input type="text" id="edit-web" value="Notes 2: Web Development Basics (PDF)">
-                    <button onclick="saveEditForm('web_notes', this.previousElementSibling)">Save</button>
-                </div>
-                <a href="notes/web_notes.pdf" download class="download-btn">Download</a>
-                <button class="edit-btn" onclick="toggleEdit('web_notes')">Edit</button>
-                <button class="comment-btn" onclick="openComments('web_notes')">Comments</button>
-            </li>
-            <!-- Dynamically added PDFs will appear here -->
         </ul>
     </section>
 
     <section id="youtube">
-        <h2>Related YouTube Content (Generated Links)</h2>
-        <div class="youtube-section">
-            <h3>Python Programming Tutorial</h3>
-            <iframe class="youtube-embed" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe> <!-- Placeholder; replace with real embeds -->
-            <p>Generated recommendation: Watch this video for Python basics.</p>
+        <h2>Related Tutorials</h2>
+        <div style="text-align: center;">
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
         </div>
-        <div class="youtube-section">
-            <h3>Web Development Basics</h3>
-            <iframe class="youtube-embed" src="https://www.youtube.com/embed/another-video-id" allowfullscreen></iframe>
-            <p>Generated recommendation: Intro to web dev.</p>
-        </div>
-        <!-- More can be added dynamically based on notes titles -->
     </section>
-    
+
     <footer>
-        <p>&copy; 2025 Pro Vision. All rights reserved.</p>
+        <p>&copy; 2026 <strong>Pro Vision Ug</strong>. All rights reserved.</p>
     </footer>
 
-    <!-- Comments Modal -->
-    <div id="comments-modal" class="modal">
+    <div id="commentModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeComments()">&times;</span>
-            <h3 id="modal-title">Comments</h3>
-            <div id="comments-list" class="comments-list"></div>
-            <input type="text" id="new-comment" placeholder="Add a comment...">
-            <button onclick="addComment()">Submit</button>
+            <h3 id="modalTitle">Comments</h3>
+            <div id="commentDisplay" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;"></div>
+            <input type="text" id="commentInput" placeholder="Write a comment..." style="width: 70%; padding: 8px;">
+            <button onclick="saveComment()" class="btn download-btn">Post</button>
+            <button onclick="closeComments()" class="btn" style="background:#eee">Close</button>
         </div>
     </div>
 
     <script>
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
+        let currentId = '';
 
-        // PDF Upload (Simulated - stores file as base64 in localStorage; for production, send to server)
-        function uploadPDF() {
-            const title = document.getElementById('pdf-title').value;
-            const file = document.getElementById('pdf-file').files[0];
-            if (!title || !file) {
-                document.getElementById('upload-status').textContent = 'Please provide title and file.';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const dataUrl = e.target.result;
-                let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-                notes.push({ title, file: dataUrl, id: Date.now() });
-                localStorage.setItem('notes', JSON.stringify(notes));
-                addNoteToList(title, dataUrl, notes.length - 1);
-                document.getElementById('upload-status').textContent = 'PDF uploaded successfully!';
-                document.getElementById('pdf-title').value = '';
-                document.getElementById('pdf-file').value = '';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function addNoteToList(title, dataUrl, index) {
-            const list = document.getElementById('notes-list');
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span class="item-info" contenteditable="true" onblur="saveEdit(this, '${index}')">${title} (PDF)</span>
-                <a href="${dataUrl}" download class="download-btn">Download</a>
-                <button class="edit-btn" onclick="toggleEdit('${index}')">Edit</button>
-                <button class="comment-btn" onclick="openComments('note-${index}')">Comments</button>
-            `;
-            list.appendChild(li);
-        }
-
-        // Load saved notes on page load
-        window.onload = function() {
-            const notes = JSON.parse(localStorage.getItem('notes') || '[]');
-            notes.forEach((note, index) => addNoteToList(note.title, note.file, index));
-        };
-
-        // Edit functionality
-        function toggleEdit(id) {
-            const span = document.querySelector(`[onblur="saveEdit(this, '${id}')"]`);
-            const form = span.nextElementSibling;
-            if (form && form.classList.contains('edit-form')) {
-                form.style.display = form.style.display === 'block' ? 'none' : 'block';
-            } else {
-                // Fallback to contenteditable
-                span.contentEditable = !span.contentEditable;
-            }
-        }
-
-        function saveEdit(span, id) {
-            const newTitle = span.textContent;
-            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-            if (notes[id]) {
-                notes[id].title = newTitle;
-                localStorage.setItem('notes', JSON.stringify(notes));
-            }
-        }
-
-        function saveEditForm(id, input) {
-            const newTitle = input.value;
-            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-            if (notes[id]) {
-                notes[id].title = newTitle;
-                localStorage.setItem('notes', JSON.stringify(notes));
-            }
-            toggleEdit(id); // Hide form
-        }
-
-        // Comments functionality (Stored in localStorage per item)
-        let currentItemId = '';
-
-        function openComments(itemId) {
-            currentItemId = itemId;
-            const modal = document.getElementById('comments-modal');
-            const title = document.getElementById('modal-title');
-            title.textContent = `Comments for ${itemId}`;
-            loadComments(itemId);
-            modal.style.display = 'block';
+        function openComments(id) {
+            currentId = id;
+            document.getElementById('commentModal').style.display = 'block';
+            document.getElementById('modalTitle').innerText = "Comments for " + id;
+            displayComments();
         }
 
         function closeComments() {
-            document.getElementById('comments-modal').style.display = 'none';
+            document.getElementById('commentModal').style.display = 'none';
         }
 
-        function loadComments(itemId) {
-            const comments = JSON.parse(localStorage.getItem(`comments-${itemId}`) || '[]');
-            const list = document.getElementById('comments-list');
-            list.innerHTML = comments.map(c => `<div class="comment-item">${c}</div>`).join('');
+        function saveComment() {
+            let text = document.getElementById('commentInput').value;
+            if(!text) return;
+            let comments = JSON.parse(localStorage.getItem('comments_' + currentId) || '[]');
+            comments.push(text);
+            localStorage.setItem('comments_' + currentId, JSON.stringify(comments));
+            document.getElementById('commentInput').value = '';
+            displayComments();
         }
 
-        function addComment() {
-            const input = document.getElementById('new-comment');
-            const comment = input.value.trim();
-            if (comment) {
-                let comments = JSON.parse(localStorage.getItem(`comments-${currentItemId}`) || '[]');
-                comments.push(comment);
-                localStorage.setItem(`comments-${currentItemId}`, JSON.stringify(comments));
-                loadComments(currentItemId);
-                input.value = '';
-            }
+        function displayComments() {
+            let comments = JSON.parse(localStorage.getItem('comments_' + currentId) || '[]');
+            document.getElementById('commentDisplay').innerHTML = comments.map(c => `<p style="border-bottom:1px solid #eee; padding:5px;">${c}</p>`).join('');
         }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('comments-modal');
-            if (event.target === modal) {
-                closeComments();
-            }
-        }
-
-        // YouTube Integration: For simplicity, hardcoded embeds; in production, use YouTube API to generate/search links based on titles
-        // Example: On note upload/edit, could fetch YouTube search via API (requires key, not included here)
     </script>
+
 </body>
 </html>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Vision - Download Movies, Audio MP3s, and Reading Notes</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-            padding-bottom: 60px; /* Prevent footer overlap */
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-        }
-        nav {
-            background-color: #444;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav a:hover {
-            color: #ffcc00;
-        }
-        section {
-            padding: 20px;
-            margin: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #333;
-            border-bottom: 2px solid #ffcc00;
-            padding-bottom: 10px;
-        }
-        .download-list {
-            list-style: none;
-            padding: 0;
-        }
-        .download-list li {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-        .download-list li .item-info {
-            flex-grow: 1;
-            margin-right: 10px;
-        }
-        .download-btn, .edit-btn, .comment-btn {
-            background-color: #ffcc00;
-            color: #333;
-            padding: 8px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            margin-left: 5px;
-            display: inline-block;
-        }
-        .download-btn:hover, .edit-btn:hover, .comment-btn:hover {
-            background-color: #e6b800;
-        }
-        .comment-btn {
-            background-color: #007bff;
-            color: white;
-            font-size: 14px;
-            padding: 8px 10px;
-        }
-        .comment-btn::after {
-            content: ' 💬'; /* Simple comment icon emoji */
-        }
-        .upload-form {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-        }
-        .upload-form input[type="file"], .upload-form input[type="text"] {
-            margin-right: 10px;
-            padding: 5px;
-        }
-        .upload-form button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .upload-form button:hover {
-            background-color: #218838;
-        }
-        .edit-form {
-            display: none;
-            margin-top: 10px;
-        }
-        .edit-form input {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 5px;
-        }
-        .youtube-section {
-            margin-top: 20px;
-        }
-        .youtube-embed {
-            width: 100%;
-            height: 315px;
-            border: none;
-            border-radius: 8px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: black;
-        }
-        .comments-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-        .comment-item {
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-        @media (max-width: 600px) {
-            .download-list li {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .download-list li .item-info {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Pro Vision</h1>
-        <p>Your ultimate destination for movies, music, and educational notes!</p>
-    </header>
-    
-    <nav>
-        <a href="#movies">Movies</a>
-        <a href="#audio">Audio MP3</a>
-        <a href="#notes">Reading Notes</a>
-        <a href="#youtube">YouTube Links</a>
-    </nav>
-    
-    <section id="movies">
-        <h2>Movies Download</h2>
-        <ul class="download-list" id="movies-list">
-            <li>
-                <span class="item-info">Movie 1: Action Thriller (MP4)</span>
-                <a href="movies/movie1.mp4" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('movie1')">Comments</button>
-            </li>
-            <li>
-                <span class="item-info">Movie 2: Sci-Fi Adventure (MP4)</span>
-                <a href="movies/movie2.mp4" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('movie2')">Comments</button>
-            </li>
-            <!-- Add more movie links as needed -->
-        </ul>
-    </section>
-    
-    <section id="audio">
-        <h2>Audio MP3 Downloads</h2>
-        <ul class="download-list" id="audio-list">
-            <li>
-                <span class="item-info">Song 1: Pop Hit (MP3)</span>
-                <a href="audio/song1.mp3" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('song1')">Comments</button>
-            </li>
-            <li>
-                <span class="item-info">Song 2: Rock Anthem (MP3)</span>
-                <a href="audio/song2.mp3" download class="download-btn">Download</a>
-                <button class="comment-btn" onclick="openComments('song2')">Comments</button>
-            </li>
-            <!-- Add more audio links as needed -->
-        </ul>
-    </section>
-    
-    <section id="notes">
-        <h2>Reading Notes Download</h2>
-        <!-- Owner Upload Form (Simulated - in production, use backend like PHP/Node for real uploads) -->
-        <div class="upload-form">
-            <h3>Owner Upload PDF</h3>
-            <input type="text" id="pdf-title" placeholder="Enter PDF Title (e.g., Notes 3: Advanced JS)">
-            <input type="file" id="pdf-file" accept=".pdf">
-            <button onclick="uploadPDF()">Upload PDF</button>
-            <p id="upload-status"></p>
-        </div>
-        <ul class="download-list" id="notes-list">
-            <li>
-                <span class="item-info" contenteditable="true" onblur="saveEdit(this, 'python_notes')">Notes 1: Python Programming (PDF)</span>
-                <div class="edit-form">
-                    <input type="text" id="edit-python" value="Notes 1: Python Programming (PDF)">
-                    <button onclick="saveEditForm('python_notes', this.previousElementSibling)">Save</button>
-                </div>
-                <a href="notes/python_notes.pdf" download class="download-btn">Download</a>
-                <button class="edit-btn" onclick="toggleEdit('python_notes')">Edit</button>
-                <button class="comment-btn" onclick="openComments('python_notes')">Comments</button>
-            </li>
-            <li>
-                <span class="item-info" contenteditable="true" onblur="saveEdit(this, 'web_notes')">Notes 2: Web Development Basics (PDF)</span>
-                <div class="edit-form">
-                    <input type="text" id="edit-web" value="Notes 2: Web Development Basics (PDF)">
-                    <button onclick="saveEditForm('web_notes', this.previousElementSibling)">Save</button>
-                </div>
-                <a href="notes/web_notes.pdf" download class="download-btn">Download</a>
-                <button class="edit-btn" onclick="toggleEdit('web_notes')">Edit</button>
-                <button class="comment-btn" onclick="openComments('web_notes')">Comments</button>
-            </li>
-            <!-- Dynamically added PDFs will appear here -->
-        </ul>
-    </section>
-
-    <section id="youtube">
-        <h2>Related YouTube Content (Generated Links)</h2>
-        <div class="youtube-section">
-            <h3>Python Programming Tutorial</h3>
-            <iframe class="youtube-embed" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe> <!-- Placeholder; replace with real embeds -->
-            <p>Generated recommendation: Watch this video for Python basics.</p>
-        </div>
-        <div class="youtube-section">
-            <h3>Web Development Basics</h3>
-            <iframe class="youtube-embed" src="https://www.youtube.com/embed/another-video-id" allowfullscreen></iframe>
-            <p>Generated recommendation: Intro to web dev.</p>
-        </div>
-        <!-- More can be added dynamically based on notes titles -->
-    </section>
-    
-    <footer>
-        <p>&copy; 2025 Pro Vision. All rights reserved.</p>
-    </footer>
-
-    <!-- Comments Modal -->
-    <div id="comments-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeComments()">&times;</span>
-            <h3 id="modal-title">Comments</h3>
-            <div id="comments-list" class="comments-list"></div>
-            <input type="text" id="new-comment" placeholder="Add a comment...">
-            <button onclick="addComment()">Submit</button>
-        </div>
-    </div>
-
-    <script>
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        // PDF Upload (Simulated - stores file as base64 in localStorage; for production, send to server)
-        function uploadPDF() {
-            const title = document.getElementById('pdf-title').value;
-            const file = document.getElementById('pdf-file').files[0];
-            if (!title || !file) {
-                document.getElementById('upload-status').textContent = 'Please provide title and file.';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const dataUrl = e.target.result;
-                let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-                notes.push({ title, file: dataUrl, id: Date.now() });
-                localStorage.setItem('notes', JSON.stringify(notes));
-                addNoteToList(title, dataUrl, notes.length - 1);
-                document.getElementById('upload-status').textContent = 'PDF uploaded successfully!';
-                document.getElementById('pdf-title').value = '';
-                document.getElementById('pdf-file').value = '';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function addNoteToList(title, dataUrl, index) {
-            const list = document.getElementById('notes-list');
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span class="item-info" contenteditable="true" onblur="saveEdit(this, '${index}')">${title} (PDF)</span>
-                <a href="${dataUrl}" download class="download-btn">Download</a>
-                <button class="edit-btn" onclick="toggleEdit('${index}')">Edit</button>
-                <button class="comment-btn" onclick="openComments('note-${index}')">Comments</button>
-            `;
-            list.appendChild(li);
-        }
-
-        // Load saved notes on page load
-        window.onload = function() {
-            const notes = JSON.parse(localStorage.getItem('notes') || '[]');
-            notes.forEach((note, index) => addNoteToList(note.title, note.file, index));
-        };
-
-        // Edit functionality
-        function toggleEdit(id) {
-            const span = document.querySelector(`[onblur="saveEdit(this, '${id}')"]`);
-            const form = span.nextElementSibling;
-            if (form && form.classList.contains('edit-form')) {
-                form.style.display = form.style.display === 'block' ? 'none' : 'block';
-            } else {
-                // Fallback to contenteditable
-                span.contentEditable = !span.contentEditable;
-            }
-        }
-
-        function saveEdit(span, id) {
-            const newTitle = span.textContent;
-            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-            if (notes[id]) {
-                notes[id].title = newTitle;
-                localStorage.setItem('notes', JSON.stringify(notes));
-            }
-        }
-
-        function saveEditForm(id, input) {
-            const newTitle = input.value;
-            let notes = JSON.parse(localStorage.getItem('notes') || '[]');
-            if (notes[id]) {
-                notes[id].title = newTitle;
-                localStorage.setItem('notes', JSON.stringify(notes));
-            }
-            toggleEdit(id); // Hide form
-        }
-
-        // Comments functionality (Stored in localStorage per item)
-        let currentItemId = '';
-
-        function openComments(itemId) {
-            currentItemId = itemId;
-            const modal = document.getElementById('comments-modal');
-            const title = document.getElementById('modal-title');
-            title.textContent = `Comments for ${itemId}`;
-            loadComments(itemId);
-            modal.style.display = 'block';
-        }
-
-        function closeComments() {
-            document.getElementById('comments-modal').style.display = 'none';
-        }
-
-        function loadComments(itemId) {
-            const comments = JSON.parse(localStorage.getItem(`comments-${itemId}`) || '[]');
-            const list = document.getElementById('comments-list');
-            list.innerHTML = comments.map(c => `<div class="comment-item">${c}</div>`).join('');
-        }
-
-        function addComment() {
-            const input = document.getElementById('new-comment');
-            const comment = input.value.trim();
-            if (comment) {
-                let comments = JSON.parse(localStorage.getItem(`comments-${currentItemId}`) || '[]');
-                comments.push(comment);
-                localStorage.setItem(`comments-${currentItemId}`, JSON.stringify(comments));
-                loadComments(currentItemId);
-                input.value = '';
-            }
-        }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('comments-modal');
-            if (event.target === modal) {
-                closeComments();
-            }
-        }
-
-        // YouTube Integration: For simplicity, hardcoded embeds; in production, use YouTube API to generate/search links based on titles
-        // Example: On note upload/edit, could fetch YouTube search via API (requires key, not included here)
-    </script>
-</body>
-</html> rename it Pro vision ug
