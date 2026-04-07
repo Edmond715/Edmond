@@ -11,7 +11,7 @@
             padding: 0;
             background-color: #f4f4f4;
             color: #333;
-            padding-bottom: 80px;
+            padding-bottom: 100px;
         }
         header {
             background-color: #1a1a1a;
@@ -20,8 +20,8 @@
             text-align: center;
             border-bottom: 4px solid #ffcc00;
         }
-        header h1 { margin: 0; font-size: 3rem; text-transform: uppercase; }
-        header p.author { color: #fff; font-style: italic; margin-top: 10px; font-size: 1.1rem; }
+        header h1 { margin: 0; font-size: 3rem; text-transform: uppercase; letter-spacing: 2px; }
+        header p.author { color: #fff; font-style: italic; margin-top: 10px; font-size: 1.2rem; }
         
         nav {
             background-color: #333;
@@ -69,9 +69,29 @@
             cursor: pointer;
             border: none;
             transition: 0.3s;
+            display: inline-block;
         }
         .download-btn { background-color: #ffcc00; color: #111; }
+        .youtube-btn { background-color: #ff0000; color: white; margin-top: 10px; }
         .download-btn:hover { background-color: #e6b800; }
+        .youtube-btn:hover { background-color: #cc0000; }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
 
         footer {
             background-color: #1a1a1a;
@@ -82,6 +102,7 @@
             bottom: 0;
             width: 100%;
             font-size: 0.9rem;
+            z-index: 100;
         }
     </style>
 </head>
@@ -96,14 +117,15 @@
         <a href="#movies">Movies</a>
         <a href="#audio">Audio</a>
         <a href="#notes">Notes</a>
+        <a href="#youtube">YouTube</a>
     </nav>
 
     <section id="movies">
         <h2>Movies</h2>
         <ul class="download-list">
             <li>
-                <span>Sample Movie (MP4)</span>
-                <a href="#" class="btn download-btn">Download</a>
+                <span>Example Movie (MP4)</span>
+                <a href="movies/file.mp4" download class="btn download-btn">Download</a>
             </li>
         </ul>
     </section>
@@ -112,8 +134,8 @@
         <h2>Audio MP3</h2>
         <ul class="download-list">
             <li>
-                <span>Sample Song (MP3)</span>
-                <a href="#" class="btn download-btn">Download</a>
+                <span>Example Song (MP3)</span>
+                <a href="audio/file.mp3" download class="btn download-btn">Download</a>
             </li>
         </ul>
     </section>
@@ -122,10 +144,20 @@
         <h2>Reading Notes</h2>
         <ul class="download-list">
             <li>
-                <span>Sample Notes (PDF)</span>
-                <a href="#" class="btn download-btn">Download</a>
+                <span>Example Notes (PDF)</span>
+                <a href="notes/file.pdf" download class="btn download-btn">Download</a>
             </li>
         </ul>
+    </section>
+
+    <section id="youtube">
+        <h2>YouTube Channel</h2>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>
+        </div>
+        <div style="text-align: center;">
+            <a href="https://www.youtube.com/@YOUR_CHANNEL" target="_blank" class="btn youtube-btn">Subscribe to MTE Eddie</a>
+        </div>
     </section>
 
     <footer>
